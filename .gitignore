@@ -2,3 +2,4 @@
 *__pycache__*
 uid_store.txt
 /attachments/*
+.env
