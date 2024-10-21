@@ -1,7 +1,7 @@
 # Written by Juan Pablo Gutiérrez
 
 import imaplib
-import api.uid_store as ustore
+import api.uid_storing as ustore
 
 def fetch_email_uids(mail):
     status, messages = mail.uid('search', None, "ALL")
@@ -15,5 +15,8 @@ def mail_received(mail : imaplib.IMAP4_SSL, mailbox : str) -> list:
     known_uids = ustore.read_uid()
     
     new_uids = [uid for uid in current_uids if uid not in known_uids]
+
+    ustore.store_uid_list(new_uids)
+
     return new_uids
     
