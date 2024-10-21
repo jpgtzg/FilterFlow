@@ -1,6 +1,4 @@
 from algorithms.mail_listener import *
-import imaplib
-import email
 from email.header import decode_header
 from algorithms.mail_listener import mail_received
 import algorithms.mail_filtering as mf
