@@ -1,3 +1,4 @@
 .venv
 *__pycache__*
 uid_store.txt
+/attachments/*
