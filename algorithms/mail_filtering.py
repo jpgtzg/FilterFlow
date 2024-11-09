@@ -7,6 +7,7 @@ from email.header import decode_header
 import PyPDF2
 
 def get_attached_documents(mail : imaplib.IMAP4_SSL, email_uid : bytes) -> int:
+    mail.select("inbox")
     res, msg = mail.uid('fetch', email_uid, "(RFC822)")
     part_number = 0
     
@@ -35,21 +36,14 @@ def get_attached_documents(mail : imaplib.IMAP4_SSL, email_uid : bytes) -> int:
                             filename = f"{email_uid.decode()}_attach_{part_number}.{ext}"
 
                             filepath = os.path.join("attachments", filename)
-                            open(filepath, "wb").write(part.get_payload(decode=True))
-                            print(f"Attachment saved: {filename}")
+                            if ext.lower() == 'pdf':
+                                open(filepath, "wb").write(part.get_payload(decode=True))
+                                print(f"PDF attachment saved: {filename}")
+                            else:
+                                part_number -= 1  # Don't count non-PDF attachments
     
     return part_number
 
-def apply_filter(mail : imaplib.IMAP4_SSL, email_uid : bytes, filter_function):
-    res, msg = mail.uid('fetch', email_uid, "(RFC822)")
-    
-    for response in msg:
-        if isinstance(response, tuple):
-            msg = email.message_from_bytes(response[1])
-
-            filter_function(msg)
-
-    return None
 
 def filter_pdf_attachment(email_uid: bytes, part_number:int, keywords : list) -> list:
     if isinstance(keywords, str):

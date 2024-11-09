@@ -22,24 +22,14 @@ def main(username, password):
             keywords = ["OpenXilogGo"]
             filtered_docs = mf.filter_pdf_attachment(email_uid, num, keywords)
             print(f"Filtered documents: {filtered_docs}")
-
     else:
         print("No new emails found.")
     
     # Logout and close the connection
     mail.logout()
     
-    # Return the updated UID list (including the new ones)
     return None
-# Initial setup (fetch all UIDs and start with an empty known_uids list)
-known_uids = []
 
-
-from api.imp_connection import connect
-
-#print(mail_received(connect(username, password), "inbox"))
-# Call this function periodically to check for new emails
-known_uids = main(os.getenv("username"), os.getenv("password")) 
-from models.flow import Flow
-from models.action import Action
-
+username = os.getenv("username")
+password = os.getenv("password")
+known_uids = main(username, password) 
