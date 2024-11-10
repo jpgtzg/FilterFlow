@@ -3,6 +3,7 @@ from email.header import decode_header
 from algorithms.mail_listener import mail_received
 import algorithms.mail_filtering as mf
 from dotenv import load_dotenv
+from api.imp_connection import connect
 import os
 
 load_dotenv()
@@ -16,12 +17,14 @@ def main(username, password):
     
     if new_uids:
         print(f"New emails found: {len(new_uids)}")
+        filtered_docs = []
         for email_uid in new_uids:
             num = mf.get_attached_documents(mail, email_uid)
-            print(f"Attachments found for {email_uid}: {num}")
             keywords = ["OpenXilogGo"]
-            filtered_docs = mf.filter_pdf_attachment(email_uid, num, keywords)
-            print(f"Filtered documents: {filtered_docs}")
+            docs = mf.filter_pdf_attachment(email_uid, num, keywords)
+            if docs:
+                filtered_docs.extend(docs)
+        print(f"Filtered documents: {filtered_docs}")
     else:
         print("No new emails found.")
     
@@ -32,4 +35,4 @@ def main(username, password):
 
 username = os.getenv("username")
 password = os.getenv("password")
-known_uids = main(username, password) 
+main(username, password)
