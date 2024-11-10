@@ -2,6 +2,8 @@
 
 FilterFlow is a powerful, fast, and fully customizable solution for automating file filtering in emails based on subject lines and attached files. It's designed as an efficient alternative to PowerAutomate, offering greater control and flexibility for users who need streamlined automation for managing their inboxes.
 
+For now, FilterFlow only supports basic filtering and downloading files from gmail and uploading them to a specific place.
+
 ## Features
 
 - **Automated File Filtering**: Automatically process emails, categorize attachments, and sort based on custom rules tied to subject lines and file types.
