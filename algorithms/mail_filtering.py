@@ -60,11 +60,18 @@ def filter_pdf_attachment(email_uid: bytes, part_number:int, keywords : list) ->
             content = ""
             for page_num in range(len(reader.pages)):
                 content += reader.pages[page_num].extract_text()
-                            
+            
+            keyword_found = False    
             for keyword in keywords:
                 if keyword in content:
                     coincidences.append(filename)
                     print(f"Keyword found in {filename}: {keyword}")
+                    keyword_found = True
                     break
+            
+            if not keyword_found:
+                f.close()
+                os.remove(filepath)
+                print(f"No keywords found - deleted {filename}")
                     
     return coincidences
