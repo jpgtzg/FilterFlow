@@ -1,7 +1,7 @@
 # Written by Juan Pablo Gutiérrez
 
 import imaplib
-import api.uid_storing as ustore
+import api.mail.uid_storing as ustore
 
 def fetch_email_uids(mail):
     status, messages = mail.uid('search', None, "ALL")
