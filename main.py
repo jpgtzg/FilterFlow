@@ -6,11 +6,12 @@ from dotenv import load_dotenv
 from api.imp_connection import connect
 import os
 import time
-
+import streamlit as st
 load_dotenv()
 
 # Function to read the subjects of new emails
 def main(username, password):
+    filters = ["OpenXilogGo"]
     # Connect to the email server
     mail = connect(username, password)
 
@@ -23,8 +24,7 @@ def main(username, password):
             filtered_docs = []
             for email_uid in new_uids:
                 num = mf.get_attached_documents(mail, email_uid)
-                keywords = ["OpenXilogGo"]
-                docs = mf.filter_pdf_attachment(email_uid, num, keywords)
+                docs = mf.filter_pdf_attachment(email_uid, num, filters)
                 if docs:
                     # Missing: Upload to the desired place
                     filtered_docs.extend(docs)
