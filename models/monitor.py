@@ -6,16 +6,23 @@ from dotenv import load_dotenv
 from api.mail.imp_connection import connect
 import os
 import time
+from threading import Lock
 
 class EmailMonitor:
     def __init__(self, username, password, monitor_id, filters=None):
         """Initialize the email monitor with credentials and filters"""
-        self.id = id
+        self.id = monitor_id
         self.username = username
         self.password = password
         self.filters = filters
         self.mail = None
-        self.is_running = False
+        self._is_running = False
+        self._lock = Lock()
+
+    @property
+    def is_running(self):
+        """Property to safely access the running state"""
+        return self.get_is_running()
 
     def connect(self):
         """Establish connection to the email server"""
@@ -51,16 +58,25 @@ class EmailMonitor:
         if not self.connect():
             raise ConnectionError("Failed to connect to email server")
         
-        self.is_running = True
+        with self._lock:
+            self._is_running = True
+        print(f"Monitor {self.id} started with is_running = {self._is_running}")
         try:
-            while self.is_running:
+            while self.get_is_running():
                 self.process_new_emails()
                 time.sleep(interval)
         finally:
+            with self._lock:
+                self._is_running = False
             self.disconnect()
 
     def stop_monitoring(self):
-        """Stop the email monitoring loop"""
-        self.is_running = False
-
-
+        """Stop the email monitoring loop in a thread-safe way"""
+        with self._lock:
+            self._is_running = False
+        print(f"Monitor {self.id} stopped with is_running = {self._is_running}")
+        
+    def get_is_running(self):
+        """Get the is_running status in a thread-safe way"""
+        with self._lock:
+            return self._is_running

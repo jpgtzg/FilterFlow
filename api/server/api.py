@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
 from models.monitor import EmailMonitor
+import threading
 
 app = FastAPI()
 monitors = {}
@@ -38,12 +39,11 @@ def create_monitor(monitor_data: MonitorCreate):
 def get_monitors():
     monitor_list = []
     for monitor_id, monitor in monitors.items():
-        print(f"Monitor {monitor_id} status: {monitor.is_running}")
         monitor_list.append({
             "id": monitor_id,
             "username": monitor.username,
             "filters": monitor.filters,
-            "is_running": monitor.is_running.is_set() if hasattr(monitor.is_running, 'is_set') else bool(monitor.is_running)
+            "is_running": monitor.get_is_running()
         })
     return monitor_list
 
@@ -52,7 +52,11 @@ def start_monitor(monitor_id: str):
     if monitor_id not in monitors:
         raise HTTPException(status_code=404, detail="Monitor not found")
     
-    monitors[monitor_id].start_monitoring()
+    monitor_thread = threading.Thread(
+        target=monitors[monitor_id].start_monitoring,
+        daemon=True
+    )
+    monitor_thread.start()
     return {"status": "success"}
 
 @app.post("/monitors/{monitor_id}/stop")
@@ -73,7 +77,7 @@ def get_monitor(monitor_id: str):
         "id": monitor_id,
         "username": monitor.username,
         "filters": monitor.filters,
-        "is_running": monitor.is_running
+        "is_running": monitor.get_is_running()
     }
 
 @app.post("/monitors/{monitor_id}/filters")
