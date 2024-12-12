@@ -38,11 +38,12 @@ def create_monitor(monitor_data: MonitorCreate):
 def get_monitors():
     monitor_list = []
     for monitor_id, monitor in monitors.items():
+        print(f"Monitor {monitor_id} status: {monitor.is_running}")
         monitor_list.append({
             "id": monitor_id,
             "username": monitor.username,
             "filters": monitor.filters,
-            "is_running": monitor.is_running
+            "is_running": monitor.is_running.is_set() if hasattr(monitor.is_running, 'is_set') else bool(monitor.is_running)
         })
     return monitor_list
 

@@ -8,7 +8,7 @@ import os
 import time
 
 class EmailMonitor:
-    def __init__(self, username, password, id, filters=None):
+    def __init__(self, username, password, monitor_id, filters=None):
         """Initialize the email monitor with credentials and filters"""
         self.id = id
         self.username = username

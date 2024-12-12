@@ -1,9 +1,10 @@
 import streamlit as st
 import requests
 import json
+from typing import List
 
 # Constants
-API_BASE_URL = "http://localhost:8000"
+API_BASE_URL = "http://127.0.0.1:8000"
 
 def create_monitor(username, password, filters):
     if not username or not password:
