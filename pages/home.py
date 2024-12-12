@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import json
 from typing import List
+import time
 
 # Constants
 API_BASE_URL = "http://127.0.0.1:8000"
@@ -31,10 +32,24 @@ def get_monitors():
     return []
 
 def toggle_monitor(monitor_id, action):
+    # Skip API call if trying to start an already running monitor
+    # or stop an already stopped monitor
+    monitors = get_monitors()
+    current_monitor = next((m for m in monitors if m['id'] == monitor_id), None)
+    
+    if current_monitor:
+        if (action == "start" and current_monitor['is_running']) or \
+           (action == "stop" and not current_monitor['is_running']):
+            st.warning(f"Monitor is already {action}ed!")
+            return
+    
     response = requests.post(f"{API_BASE_URL}/monitors/{monitor_id}/{action}")
     if response.status_code == 200:
         st.success(f"Monitor {action}ed successfully!")
-        st.rerun()
+        # Rerun 3 times with a small delay between each
+        for _ in range(3):
+            time.sleep(0.5)  # Add a small delay between reruns
+            st.rerun()
     else:
         st.error(f"Error {action}ing monitor: {response.text}")
 
