@@ -1,3 +1,5 @@
+# Written by Juan Pablo Gutiérrez
+
 from algorithms.mail_listener import *
 from email.header import decode_header
 from algorithms.mail_listener import mail_received
